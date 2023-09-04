@@ -1,39 +1,29 @@
-#include <stdio.h>
+#include "main.h"
 #include <stdlib.h>
-#include <unistd.h>
-#include "main.h" // Include your header file with the prototype
 
+/**
+ * read_textfile- Read text file print to STDOUT.
+ * @filename: text file being read
+ * @letters: number of letters to be read
+ * Return: w- actual number of bytes read and printed
+ *        0 when function fails or filename is NULL.
+ */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-	    if (filename == NULL)
-		            return 0; // Return 0 if the filename is NULL
+	char *buf;
+	ssize_t fd;
+	ssize_t w;
+	ssize_t t;
 
-	        int fd = open(filename, O_RDONLY); // Open the file for reading
-		    if (fd == -1)
-			            return 0; // Return 0 if there was an error opening the file
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		return (0);
+	buf = malloc(sizeof(char) * letters);
+	t = read(fd, buf, letters);
+	w = write(STDOUT_FILENO, buf, t);
 
-		        char *buffer = malloc(sizeof(char) * letters); // Allocate a buffer
-			    if (buffer == NULL)
-				        {
-						        close(fd);
-							        return 0; // Return 0 if memory allocation fails
-								    }
-
-			        ssize_t bytes_read = read(fd, buffer, letters); // Read from the file
-				    if (bytes_read == -1)
-					        {
-							        free(buffer);
-								        close(fd);
-									        return 0; // Return 0 if there was an error reading from the file
-										    }
-
-				        ssize_t bytes_written = write(STDOUT_FILENO, buffer, bytes_read); // Write to standard output
-					    free(buffer);
-					        close(fd);
-
-						    if (bytes_written == -1 || bytes_written != bytes_read)
-							            return 0; // Return 0 if there was an error writing or not all bytes were written
-
-						        return bytes_written; // Return the actual number of letters read and printed
+	free(buf);
+	close(fd);
+	return (w);
 }
 
